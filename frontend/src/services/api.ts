@@ -130,18 +130,16 @@ export const bruteService = {
       throw new Error(error.response?.data?.message || "Error al obtener los brutos");
     }
   },
-
   selectBrute: async (bruteId: number): Promise<void> => {
     try {
-      await api.post(`/brutes/${bruteId}/select`);
+      await api.patch(`/brutes/${bruteId}/select`);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al seleccionar el bruto");
     }
   },
-
   getCurrentSelectedBrute: async (): Promise<Brute> => {
     try {
-      const response = await api.get<Brute>("/brutes/current");
+      const response = await api.get<Brute>("/brutes/current/selected");
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al obtener el bruto seleccionado");
@@ -163,6 +161,35 @@ export const bruteService = {
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al iniciar la batalla");
+    }
+  },
+};
+
+export const fightService = {
+  startFight: async (opponentId: number): Promise<any> => {
+    try {
+      const response = await api.post(`/fights/selected-brute/vs/${opponentId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al iniciar la pelea");
+    }
+  },
+
+  getFightResult: async (fightId: number): Promise<any> => {
+    try {
+      const response = await api.get(`/fight/${fightId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener el resultado de la pelea");
+    }
+  },
+
+  getFightHistory: async (bruteId: number): Promise<any> => {
+    try {
+      const response = await api.get(`/fights/${bruteId}/history`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener el historial de peleas");
     }
   },
 };

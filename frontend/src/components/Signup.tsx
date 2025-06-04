@@ -14,16 +14,25 @@ import { authService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { PersonAdd as SignUpIcon } from '@mui/icons-material';
 
-const Signup = () => {
-  const [formData, setFormData] = useState({
+interface SignupFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  username: string;
+}
+
+const Signup: React.FC = () => {
+  const [formData, setFormData] = useState<SignupFormData>({
     email: '',
     password: '',
     confirmPassword: '',
     username: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();  const handleSubmit = async (e) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
@@ -37,8 +46,7 @@ const Signup = () => {
 
     setLoading(true);
     setError('');
-    
-    try {
+      try {
       const signupData = {
         username: formData.username.trim(),
         email: formData.email.trim(),
@@ -51,23 +59,25 @@ const Signup = () => {
 
       // Después del registro exitoso, iniciar sesión automáticamente
       await authService.login({
-        email: formData.email,
+        username: formData.username,
         password: formData.password
       });
       navigate('/create-brute');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error durante el registro:', err);
-      setError(err.message || 'Error en el registro. Por favor, verifica tus datos.');
+      setError(
+        err instanceof Error ? err.message : 'Error en el registro. Por favor, verifica tus datos.'
+      );
     } finally {
       setLoading(false);
     }
   };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (

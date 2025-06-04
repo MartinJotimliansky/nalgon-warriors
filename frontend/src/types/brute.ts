@@ -39,7 +39,8 @@ export interface Brute {
   name: string;
   level: number;
   xp: number;
-  gold: number;
+  gold: number;  
+  rating: number;  // Añadido rating
   stats: Stats;
   skills: Skill[];
   weapons: Weapon[];

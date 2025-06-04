@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Brute } from '../types/brute';
-import BattleScreen from './BattleScreen';
+import { useNavigate } from 'react-router-dom';
+import '../styles/BruteDetails.css';
 
 interface BruteDetailsProps {
   brute: Brute;
 }
 
 const BruteDetails: React.FC<BruteDetailsProps> = ({ brute }) => {
-  const [showBattleScreen, setShowBattleScreen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   if (!brute) {
     return <div className="error-message">No se pudo cargar la información del guerrero</div>;
-  }
-
-  if (showBattleScreen) {
-    return <BattleScreen brute={brute} onBack={() => setShowBattleScreen(false)} />;
   }
 
   const getSkillDescription = (skill: Brute['skills'][0]): string => {
@@ -36,70 +33,22 @@ const BruteDetails: React.FC<BruteDetailsProps> = ({ brute }) => {
         <div className="brute-title">
           <h2>{brute.name}</h2>
           <span className="level">Nivel {brute.level}</span>
-        </div>
-        <button 
+        </div>        <button 
           className="arena-button"
-          onClick={() => setShowBattleScreen(true)}
+          onClick={() => navigate('/battle')}
         >
           ARENA
         </button>
-      </div>
-
-      <div className="stats-card">
+      </div>      <div className="classic-stats">
         <h3>Estadísticas</h3>
         {brute.stats && (
-          <div className="stats-grid">
-            <div className="stat">
-              <label>HP:</label>
-              <div className="stat-bar-container">
-                <div 
-                  className="stat-bar" 
-                  style={{ width: `${Math.min(100, brute.stats.hp / 2)}%` }}
-                ></div>
-                <span className="stat-value">{brute.stats.hp}</span>
-              </div>
-            </div>
-            <div className="stat">
-              <label>Fuerza:</label>
-              <div className="stat-bar-container">
-                <div 
-                  className="stat-bar strength" 
-                  style={{ width: `${Math.min(100, brute.stats.strenght * 2)}%` }}
-                ></div>
-                <span className="stat-value">{brute.stats.strenght}</span>
-              </div>
-            </div>
-            <div className="stat">
-              <label>Agilidad:</label>
-              <div className="stat-bar-container">
-                <div 
-                  className="stat-bar agility" 
-                  style={{ width: `${Math.min(100, brute.stats.agility * 2)}%` }}
-                ></div>
-                <span className="stat-value">{brute.stats.agility}</span>
-              </div>
-            </div>
-            <div className="stat">
-              <label>Resistencia:</label>
-              <div className="stat-bar-container">
-                <div 
-                  className="stat-bar endurance" 
-                  style={{ width: `${Math.min(100, brute.stats.endurance * 2)}%` }}
-                ></div>
-                <span className="stat-value">{brute.stats.endurance}</span>
-              </div>
-            </div>
-            <div className="stat">
-              <label>Inteligencia:</label>
-              <div className="stat-bar-container">
-                <div 
-                  className="stat-bar intelligence" 
-                  style={{ width: `${Math.min(100, brute.stats.intelligence * 2)}%` }}
-                ></div>
-                <span className="stat-value">{brute.stats.intelligence}</span>
-              </div>
-            </div>
-          </div>
+          <ul className="classic-stats-list">
+            <li><span className="stat-label">HP:</span> <span className="stat-value-classic">{brute.stats.hp}</span></li>
+            <li><span className="stat-label">Fuerza:</span> <span className="stat-value-classic">{brute.stats.strenght}</span></li>
+            <li><span className="stat-label">Agilidad:</span> <span className="stat-value-classic">{brute.stats.agility}</span></li>
+            <li><span className="stat-label">Resistencia:</span> <span className="stat-value-classic">{brute.stats.endurance}</span></li>
+            <li><span className="stat-label">Inteligencia:</span> <span className="stat-value-classic">{brute.stats.intelligence}</span></li>
+          </ul>
         )}
       </div>
 
@@ -136,10 +85,6 @@ const BruteDetails: React.FC<BruteDetailsProps> = ({ brute }) => {
           </div>
         </div>
       )}
-
-      <style>{`
-        // ...existing styles...
-      `}</style>
     </div>
   );
 };

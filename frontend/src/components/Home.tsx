@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 import { bruteService } from '../services/api';
 
 const Home = () => {
@@ -25,21 +26,19 @@ const Home = () => {
     
     loadInitialBrute();
   }, [navigate]);
-
   return (
-    <div className="loading-container">
-      <div>Cargando...</div>
-      <style jsx="true">{`
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          color: #666;
-          font-size: 1.2em;
-        }
-      `}</style>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        color: '#666',
+        fontSize: '1.2em',
+      }}
+    >
+      <Typography>Cargando...</Typography>
+    </Box>
   );
 };
 

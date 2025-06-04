@@ -75,7 +75,7 @@ const BruteCreation = () => {
     setError('');
     try {      const newBrute = await bruteService.createBrute(name);
       await bruteService.selectBrute(newBrute.id);
-      navigate(`/brutes/${newBrute.id}`); // Redirige directamente a la arena del bruto
+      navigate('/opponents'); // Redirige a la selección de oponentes
   } catch (err: any) {
       if (err.message?.includes('Sesión expirada')) {
         navigate('/login');

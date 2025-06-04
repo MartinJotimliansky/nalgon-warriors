@@ -48,11 +48,10 @@ const Login: React.FC = () => {
 
       // Obtener los brutos del usuario después del login
       const brutes = await bruteService.getAllBrutes();
-      
-      if (brutes && brutes.length > 0) {
-        // Si tiene brutos, seleccionar el primero y navegar a la arena
+        if (brutes && brutes.length > 0) {
+        // Si tiene brutos, seleccionar el primero y navegar a la selección de oponentes
         await bruteService.selectBrute(brutes[0].id);
-        navigate(`/brutes/${brutes[0].id}`);
+        navigate('/opponents');
       } else {
         // Si no tiene brutos, ir a la pantalla de creación
         navigate('/create-brute');

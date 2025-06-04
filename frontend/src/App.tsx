@@ -9,6 +9,8 @@ import BruteDetails from './components/BruteDetails';
 import BruteDetailsWrapper from './components/BruteDetailsWrapper';
 import Home from './components/Home';
 import Header from './components/Header';
+import OpponentSelection from './components/OpponentSelection';
+import BattleScreen from './components/BattleScreen';
 import { authService, bruteService } from './services/api';
 
 // Función para proteger rutas
@@ -59,6 +61,15 @@ const darkTheme = createTheme({
   },
 });
 
+const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ProtectedRoute>
+      <Header />
+      {children}
+    </ProtectedRoute>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -70,26 +81,43 @@ function App() {
           <Route
             path="/create-brute"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <BruteCreation />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           <Route
             path="/brutes/:bruteId"
             element={
-              <ProtectedRoute>
-                <Header />
+              <ProtectedLayout>
                 <BruteDetailsWrapper />
-              </ProtectedRoute>
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/opponents"
+            element={
+              <ProtectedLayout>
+                <OpponentSelection />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/battle"
+            element={
+              <ProtectedLayout>
+                <BattleScreen />
+              </ProtectedLayout>
             }
           />
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              authService.isAuthenticated() ? (
+                <Navigate to="/opponents" replace />
+              ) : (
                 <Navigate to="/login" replace />
-              </ProtectedRoute>
+              )
             }
           />
         </Routes>

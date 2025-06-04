@@ -2,24 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { bruteService } from '../services/api';
 import BruteDetails from './BruteDetails';
+import { Brute } from '../types/brute';
 
 const BruteDetailsWrapper = () => {
-  const { bruteId } = useParams();
-  const [brute, setBrute] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { bruteId } = useParams<{ bruteId: string }>();
+  const [brute, setBrute] = useState<Brute | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchBruteDetails = async (id) => {
+  const fetchBruteDetails = async (id: string) => {
     try {
       setLoading(true);
+      const bruteIdNum = parseInt(id, 10);
+      
+      if (isNaN(bruteIdNum)) {
+        throw new Error('ID de bruto inválido');
+      }
+
       // Primero seleccionamos el bruto
-      await bruteService.selectBrute(id);
+      await bruteService.selectBrute(bruteIdNum);
       // Luego obtenemos sus datos actualizados
-      const bruteData = await bruteService.getBruteById(id);
+      const bruteData = await bruteService.getBruteById(bruteIdNum);
       setBrute(bruteData);
       setError(null);
-    } catch (error) {
-      console.error('Error fetching brute details:', error);
+    } catch (err) {
+      console.error('Error fetching brute details:', err);
       setError('No se pudo cargar la información del guerrero');
     } finally {
       setLoading(false);
@@ -36,7 +43,7 @@ const BruteDetailsWrapper = () => {
     return (
       <div className="loading-container">
         <div>Cargando...</div>
-        <style jsx="true">{`
+        <style>{`
           .loading-container {
             display: flex;
             justify-content: center;
@@ -54,7 +61,7 @@ const BruteDetailsWrapper = () => {
     return (
       <div className="error-container">
         <div className="error-message">{error}</div>
-        <style jsx="true">{`
+        <style>{`
           .error-container {
             display: flex;
             justify-content: center;
@@ -68,6 +75,10 @@ const BruteDetailsWrapper = () => {
         `}</style>
       </div>
     );
+  }
+
+  if (!brute) {
+    return <div>No hay bruto para mostrar</div>;
   }
 
   return <BruteDetails brute={brute} />;
