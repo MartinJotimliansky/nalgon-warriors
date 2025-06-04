@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fightService } from '../services/api';
-import './BattleScreen.css';
+import '../styles/BattleScreen.css';
 import { Brute } from '../types/brute';
 
 const BattleScreen: React.FC = () => {

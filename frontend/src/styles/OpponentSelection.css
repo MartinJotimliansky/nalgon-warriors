@@ -1,17 +1,34 @@
-.opponent-selection .battle-layout {
+/* Contenedor principal */
+.opponent-selection {
   display: flex;
-  gap: 32px;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
 }
 
+.opponent-selection .battle-layout {
+  display: flex;
+  gap: 30px;
+  min-height: 100vh;
+  padding: 15px;
+  max-width: 1600px; /* Mayor ancho máximo para ocupar más espacio */
+  width: 100%;
+  justify-content: center; /* Centrado perfecto del contenido */
+  align-items: flex-start;
+}
+
+/* Estilo del bruto del jugador */
 .your-brute {
   background: #22304a;
   border-radius: 12px;
   padding: 32px 24px 24px 24px;
-  min-width: 320px;
+  min-width: 420px;
+  max-width: 460px; /* Incrementar ancho máximo */
   color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: fit-content;
 }
 
 .your-brute .brute-header {
@@ -52,38 +69,45 @@
   border-radius: 8px;
   padding: 12px 16px;
   margin-top: 8px;
+  width: 100%;
 }
 
 .stats-grid .stat-bar {
   margin-bottom: 8px;
 }
 
+/* Contenedor de oponentes */
 .opponents {
   flex: 1;
+  max-width: 800px; /* Incrementar ancho máximo de la sección de oponentes */
 }
 
 .opponents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr 1fr; /* Exactamente 2 columnas */
+  grid-template-rows: repeat(3, 1fr); /* Exactamente 3 filas */
+  gap: 16px;
+  max-height: 550px; /* Incrementar altura para acomodar cards más altas */
 }
 
+/* Tarjeta de oponente */
 .opponent-card {
   background: #22304a;
   border-radius: 12px;
-  padding: 18px 16px 14px 16px;
+  padding: 16px 16px 32px 16px; /* Incrementar padding inferior significativamente */
   color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   cursor: pointer;
   transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 170px; /* Incrementar altura ligeramente para acomodar el padding */
 }
 
 .opponent-card:hover {
   box-shadow: 0 0 0 2px #6ec1ff;
 }
 
+/* Header del oponente - Nombre y Nivel */
 .opponent-header {
   display: flex;
   flex-direction: column;
@@ -91,45 +115,121 @@
   margin-bottom: 8px;
 }
 
-.opponent-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
-  background: #18213a;
-  margin-bottom: 8px;
+.opponent-card h3 {
+  color: #fff;
+  margin: 0 0 4px 0;
+  font-size: 1.1em;
+  text-align: center;
+  font-weight: bold;
 }
 
 .level-badge {
   color: #6ec1ff;
   font-weight: bold;
-  margin-top: 2px;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
-.opponent-hp {
-  color: #6ec1ff;
-  font-size: 1.1em;
+/* Fila de estadísticas especiales */
+.opponent-special-stats-row {
+  display: flex;
+  align-items: flex-start; /* Cambiar a flex-start para que no se estire hasta abajo */
+  gap: 12px;
+  flex: 1;
+  margin-bottom: 8px; /* Agregar margen inferior para separar del borde */
+}
+
+/* Bloque de HP con corazón */
+.opponent-hp-icon-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+}
+
+.hp-icon-large {
+  color: #ff6b6b;
+  font-size: 1.8em;
+  margin-bottom: 2px;
+}
+
+.hp-value-large {
+  color: #fff;
+  font-size: 1.2em;
   font-weight: bold;
-  margin-bottom: 6px;
+  text-shadow: 1px 1px 2px #000;
 }
 
-.opponent-stats {
-  background: #1a253a;
+/* Barras de estadísticas */
+.opponent-special-stats-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.stat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  color: #fff;
+  font-size: 1em;
+  min-width: 16px;
+}
+
+.stat-bar-bg {
+  background: #18213a;
+  border-radius: 4px;
+  width: 120px;
+  height: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  background: #6ec1ff;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* Avatar del oponente */
+.avatar-container-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+.opponent-avatar {
+  width: 70px;
+  height: 70px;
   border-radius: 8px;
-  padding: 8px 12px;
-  width: 100%;
+  background: #18213a;
 }
 
+/* Historial de combates */
 .fight-history {
   background: #111a2a;
   border-radius: 12px;
   padding: 18px 16px;
   color: #fff;
-  min-width: 260px;
+  min-width: 380px;
+  max-width: 400px; /* Incrementar ancho máximo */
+  height: fit-content;
 }
 
 .fight-history h2 {
   color: #fff;
   margin-bottom: 12px;
+  font-size: 1.2em;
 }
 
 .history-list {
@@ -141,7 +241,7 @@
 .history-card {
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 1em;
+  font-size: 0.9em;
   font-weight: 500;
 }
 
@@ -156,72 +256,40 @@
 }
 
 .exp-gain {
-  font-size: 0.95em;
+  font-size: 0.85em;
   color: #6ec1ff;
   margin-top: 2px;
 }
 
-.opponent-special-stats-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 18px;
-  margin-top: 10px;
-  margin-bottom: 8px;
+/* Responsive design */
+@media (min-width: 1201px) {
+  .opponent-selection {
+    padding: 0 15px; /* Reducir padding lateral para ocupar más espacio */
+  }
+  
+  .opponent-selection .battle-layout {
+    justify-content: center; /* Centrado perfecto */
+    align-items: flex-start;
+    margin: 0 auto; /* Centrado adicional */
+  }
 }
 
-.opponent-hp-icon-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 70px;
-}
-
-.hp-icon-large {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 2px;
-}
-
-.hp-value-large {
-  color: #fff;
-  font-size: 1.5em;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px #000;
-}
-
-.opponent-special-stats-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-}
-
-.stat-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.stat-bar-bg {
-  background: #18213a;
-  border-radius: 6px;
-  width: 120px;
-  height: 14px;
-  overflow: hidden;
-  position: relative;
-}
-
-.stat-bar-fill {
-  background: #6ec1ff;
-  height: 100%;
-  border-radius: 6px;
-  transition: width 0.3s;
-}
-
-.stat-icon {
-  color: #fff;
-  font-size: 1.1em;
+@media (max-width: 1200px) {
+  .opponent-selection .battle-layout {
+    flex-direction: column;
+    gap: 20px;
+    justify-content: flex-start; /* Cambiar alineación en móvil */
+  }
+  
+  .your-brute,
+  .fight-history {
+    min-width: auto;
+    max-width: 100%;
+  }
+  
+  .opponents-grid {
+    grid-template-columns: 1fr 1fr; /* Mantener 2 columnas en móvil */
+    grid-template-rows: auto; /* Permitir más filas en móvil */
+    max-height: none;
+  }
 }

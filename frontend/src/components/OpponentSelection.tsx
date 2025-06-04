@@ -5,7 +5,8 @@ import { Brute } from '../types/brute';
 import '../styles/OpponentSelection.css';
 // Importar iconos para los stats
 import { FaBolt, FaHeart, FaRunning, FaShieldAlt } from 'react-icons/fa';
-import { GiSwordman } from 'react-icons/gi';
+import { GiSwordman, GiBrain, GiShield } from 'react-icons/gi';
+import { FaDumbbell } from 'react-icons/fa'; // fuerza
 
 interface FightHistory {
     id: number;
@@ -104,27 +105,27 @@ const OpponentSelection: React.FC = () => {
 
                 {/* Lista de oponentes */}
                 <div className="opponents">
-                    <div className="opponents-grid">
-                        {opponents.map((opponent) => (
+                    <div className="opponents-grid">                        {opponents.map((opponent) => (
                             <div key={opponent.id} className="opponent-card" onClick={() => handleFightClick(opponent.id)}>
                                 <div className="opponent-header">
-                                    <div className="avatar-container">
-                                        <img src={`https://robohash.org/${opponent.id.toString()}?set=2&size=180x180`} alt="Avatar" className="opponent-avatar" />
-                                    </div>
-                                    <h3>{opponent.name}</h3>
+                                    <h3 className="opponent-name">{opponent.name}</h3>
                                     <div className="level-badge">
-                                        <GiSwordman /> {opponent.level}
+                                        <GiSwordman /> Nivel {opponent.level}
                                     </div>
                                 </div>
                                 <div className="opponent-special-stats-row">
                                     <div className="opponent-hp-icon-block">
-                                        <img src="/heart-copilot.png" alt="HP" className="hp-icon-large" />
+                                        <FaHeart className="hp-icon-large" />
                                         <span className="hp-value-large">{opponent.stats?.hp || 0}</span>
                                     </div>
                                     <div className="opponent-special-stats-bars">
-                                        <div className="stat-bar-row"><FaBolt className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.strenght || 0) * 10}%`}} /></div></div>
-                                        <div className="stat-bar-row"><FaRunning className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.agility || 0) * 10}%`}} /></div></div>
-                                        <div className="stat-bar-row"><FaShieldAlt className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.endurance || 0) * 10}%`}} /></div></div>
+                                        <div className="stat-bar-row"><FaDumbbell className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.strenght || 0) * 10}%`}} /></div></div>
+                                        <div className="stat-bar-row"><GiShield className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.endurance || 0) * 10}%`}} /></div></div>
+                                        <div className="stat-bar-row"><FaBolt className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.agility || 0) * 10}%`}} /></div></div>
+                                        <div className="stat-bar-row"><GiBrain className="stat-icon" /> <div className="stat-bar-bg"><div className="stat-bar-fill" style={{width: `${(opponent.stats?.intelligence || 0) * 10}%`}} /></div></div>
+                                    </div>
+                                    <div className="avatar-container-right">
+                                        <img src={`https://robohash.org/${opponent.id.toString()}?set=2&size=80x80`} alt="Avatar" className="opponent-avatar" />
                                     </div>
                                 </div>
                             </div>
