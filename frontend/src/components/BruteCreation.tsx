@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Brute } from '../types/brute';
 import { 
   Box, 
   Button, 
@@ -24,7 +25,13 @@ import {
 import { bruteService, authService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const StatBar = ({ label, value, maxValue = 20 }) => (
+interface StatBarProps {
+  label: string;
+  value: number;
+  maxValue?: number;
+}
+
+const StatBar: React.FC<StatBarProps> = ({ label, value, maxValue = 20 }) => (
   <Box sx={{ width: '100%', mb: 2 }}>
     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
       <Typography variant="body2" color="text.secondary">
@@ -52,7 +59,7 @@ const StatBar = ({ label, value, maxValue = 20 }) => (
 const BruteCreation = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [brute, setBrute] = useState(null);
+  const [brute, setBrute] = useState<Brute | null>(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -62,16 +69,15 @@ const BruteCreation = () => {
     }
   }, [navigate]);
 
-  const handleCreateBrute = async (e) => {
+  const handleCreateBrute = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    try {
-      const newBrute = await bruteService.createBrute(name);
+    try {      const newBrute = await bruteService.createBrute(name);
       await bruteService.selectBrute(newBrute.id);
-      navigate('/'); // Redirige al home después de crear y seleccionar
-    } catch (err) {
-      if (err.message.includes('Sesión expirada')) {
+      navigate(`/brutes/${newBrute.id}`); // Redirige directamente a la arena del bruto
+  } catch (err: any) {
+      if (err.message?.includes('Sesión expirada')) {
         navigate('/login');
       } else {
         setError(err.message || 'Error al crear el bruto');

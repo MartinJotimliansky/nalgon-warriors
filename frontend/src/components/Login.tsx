@@ -10,14 +10,21 @@ import {
   CircularProgress,
   Link
 } from '@mui/material';
-import { authService } from '../services/api';
+import { authService, bruteService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {  const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+const Login: React.FC = () => {
+  const [credentials, setCredentials] = useState<LoginCredentials>({ username: '', password: '' });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const navigate = useNavigate();
-  const handleLogin = async (e) => {
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!credentials.username || !credentials.password) {
@@ -38,17 +45,27 @@ const Login = () => {  const [credentials, setCredentials] = useState({ username
         username: credentials.username.trim(),
         password: credentials.password
       });
+
+      // Obtener los brutos del usuario después del login
+      const brutes = await bruteService.getAllBrutes();
       
-      navigate('/create-brute');
+      if (brutes && brutes.length > 0) {
+        // Si tiene brutos, seleccionar el primero y navegar a la arena
+        await bruteService.selectBrute(brutes[0].id);
+        navigate(`/brutes/${brutes[0].id}`);
+      } else {
+        // Si no tiene brutos, ir a la pantalla de creación
+        navigate('/create-brute');
+      }
     } catch (err) {
       console.error('Error en login:', err);
-      setError(err.message || 'Error al iniciar sesión');
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({
       ...credentials,
       [e.target.name]: e.target.value
@@ -63,7 +80,8 @@ const Login = () => {  const [credentials, setCredentials] = useState({ username
             Iniciar Sesión
           </Typography>
           
-          <form onSubmit={handleLogin}>            <TextField
+          <form onSubmit={handleLogin}>
+            <TextField
               fullWidth
               label="Usuario"
               name="username"
@@ -90,7 +108,9 @@ const Login = () => {  const [credentials, setCredentials] = useState({ username
               <Alert severity="error" sx={{ mt: 2 }}>
                 {error}
               </Alert>
-            )}            <Button
+            )}
+
+            <Button
               type="submit"
               fullWidth
               variant="contained"
@@ -106,9 +126,16 @@ const Login = () => {  const [credentials, setCredentials] = useState({ username
             </Button>
 
             <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Link href="/signup" variant="body2">
-                ¿No tienes una cuenta? Regístrate
-              </Link>
+              <Typography variant="body2">
+                ¿No tienes una cuenta?{' '}
+                <Link 
+                  component="button"
+                  variant="body2"
+                  onClick={() => navigate('/signup')}
+                >
+                  Regístrate
+                </Link>
+              </Typography>
             </Box>
           </form>
         </Paper>

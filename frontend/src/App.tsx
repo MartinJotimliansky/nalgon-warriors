@@ -12,7 +12,7 @@ import Header from './components/Header';
 import { authService, bruteService } from './services/api';
 
 // Función para proteger rutas
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!authService.isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
@@ -88,8 +88,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Header />
-                <Home />
+                <Navigate to="/login" replace />
               </ProtectedRoute>
             }
           />
