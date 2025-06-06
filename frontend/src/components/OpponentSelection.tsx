@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { bruteService, fightService } from '../services/api';
+import { bruteService, fightService, levelService } from '../services/api';
 import { Brute } from '../types/brute';
+import ExperienceBar from './ExperienceBar';
 import '../styles/OpponentSelection.css';
 // Importar iconos para los stats
 import { FaBolt, FaHeart, FaRunning, FaShieldAlt } from 'react-icons/fa';
@@ -13,6 +14,16 @@ interface FightHistory {
     attacker: Brute;
     defender: Brute;
     winner: Brute;
+}
+
+interface LevelInfo {
+    currentXp: number;
+    level: number;
+    currentLevelXp: number;
+    nextLevelXp: number;
+    progressPercentage: number;
+    canLevelUp: boolean;
+    blockedFromCombat: boolean;
 }
 
 interface StatBarProps {
@@ -35,24 +46,25 @@ const StatBar: React.FC<StatBarProps> = ({ icon, value, maxValue = 20 }) => (
 
 const OpponentSelection: React.FC = () => {
     const [selectedBrute, setSelectedBrute] = useState<Brute | null>(null);
+    const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
     const [opponents, setOpponents] = useState<Brute[]>([]);
     const [fightHistory, setFightHistory] = useState<FightHistory[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const loadData = async () => {
+    const location = useLocation();    const loadData = async () => {
         setLoading(true);
         try {
             const currentBrute = await bruteService.getCurrentSelectedBrute();
             setSelectedBrute(currentBrute);
             if (currentBrute) {
-                const [opponentsList, historyData] = await Promise.all([
+                const [opponentsList, historyData, bruteLevelInfo] = await Promise.all([
                     bruteService.getBruteOpponents(currentBrute.id),
-                    fightService.getFightHistory(currentBrute.id)
+                    fightService.getFightHistory(currentBrute.id),
+                    levelService.getBruteLevelInfo(currentBrute.id)
                 ]);
                 setOpponents(opponentsList);
                 setFightHistory(historyData.slice(0, 6)); // Últimos 6 combates
+                setLevelInfo(bruteLevelInfo);
             }
         } catch (error) {
             console.error('Error loading data:', error);
@@ -60,13 +72,28 @@ const OpponentSelection: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
+    };    useEffect(() => {
         loadData();
     }, [navigate, location.key]); // location.key cambia cada vez que navegamos, incluso a la misma ruta
 
+    const handleLevelUp = async () => {
+        if (!selectedBrute || !levelInfo?.canLevelUp) return;
+        
+        try {
+            await levelService.levelUp(selectedBrute.id);
+            // Reload data to get updated level information
+            await loadData();
+        } catch (error) {
+            console.error('Error leveling up:', error);
+        }
+    };
+
     const handleFightClick = (opponentId: number): void => {
+        // Block combat if brute can level up
+        if (levelInfo?.blockedFromCombat) {
+            alert('¡Tu bruto debe subir de nivel antes de continuar combatiendo!');
+            return;
+        }
         navigate(`/battle?opponentId=${opponentId}`);
     };
 
@@ -82,8 +109,7 @@ const OpponentSelection: React.FC = () => {
         <div className="opponent-selection">
             <div className="battle-layout">
                 {/* Tu bruto */}
-                <div className="your-brute">
-                    <div className="brute-header">
+                <div className="your-brute">                    <div className="brute-header">
                         <div className="avatar-container">
                             <img src={`https://robohash.org/${selectedBrute?.id.toString()}?set=2&size=180x180`} alt="Avatar" className="brute-avatar" />
                         </div>
@@ -92,6 +118,18 @@ const OpponentSelection: React.FC = () => {
                             <GiSwordman /> Nivel {selectedBrute?.level || 0}
                         </div>
                         <div className="brute-hp">{selectedBrute?.stats?.hp || 0}</div>
+                        
+                        {/* Experience Bar */}
+                        {levelInfo && (
+                            <ExperienceBar
+                                currentXp={levelInfo.currentXp}
+                                currentLevelXp={levelInfo.currentLevelXp}
+                                nextLevelXp={levelInfo.nextLevelXp}
+                                level={levelInfo.level}
+                                canLevelUp={levelInfo.canLevelUp}
+                                onLevelUp={handleLevelUp}
+                            />
+                        )}
                     </div>
                     {selectedBrute?.stats && (
                         <div className="stats-grid">
@@ -101,17 +139,16 @@ const OpponentSelection: React.FC = () => {
                             <StatBar icon={<FaShieldAlt />} value={selectedBrute.stats.endurance} />
                         </div>
                     )}
-                </div>
-
-                {/* Lista de oponentes */}
+                </div>                {/* Lista de oponentes */}
                 <div className="opponents">
-                    <div className="opponents-grid">                        {opponents.map((opponent) => (
-                            <div key={opponent.id} className="opponent-card" onClick={() => handleFightClick(opponent.id)}>
+                    {levelInfo?.blockedFromCombat && (
+                        <div className="combat-blocked-notice">
+                            ⚠️ Debes subir de nivel antes de continuar combatiendo
+                        </div>
+                    )}
+                    <div className={`opponents-grid ${levelInfo?.blockedFromCombat ? 'disabled' : ''}`}>                        {opponents.map((opponent) => (                            <div key={opponent.id} className="opponent-card" onClick={() => handleFightClick(opponent.id)}>
                                 <div className="opponent-header">
                                     <h3 className="opponent-name">{opponent.name}</h3>
-                                    <div className="level-badge">
-                                        <GiSwordman /> Nivel {opponent.level}
-                                    </div>
                                 </div>
                                 <div className="opponent-special-stats-row">
                                     <div className="opponent-hp-icon-block">
@@ -126,6 +163,9 @@ const OpponentSelection: React.FC = () => {
                                     </div>
                                     <div className="avatar-container-right">
                                         <img src={`https://robohash.org/${opponent.id.toString()}?set=2&size=80x80`} alt="Avatar" className="opponent-avatar" />
+                                        <div className="level-badge">
+                                            <GiSwordman /> Nivel {opponent.level}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

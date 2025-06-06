@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fightService } from '../services/api';
 import '../styles/BattleScreen.css';
@@ -10,10 +10,14 @@ const BattleScreen: React.FC = () => {
   const [winner, setWinner] = useState<Brute | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const battleStartedRef = useRef<boolean>(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const opponentId = searchParams.get('opponentId');
+    
+    // Prevenir múltiples llamadas en React Strict Mode
+    if (battleStartedRef.current) return;
     
     const startBattle = async () => {
       if (!opponentId) {
@@ -21,6 +25,8 @@ const BattleScreen: React.FC = () => {
         setLoading(false);
         return;
       }
+
+      battleStartedRef.current = true;
 
       try {
         const result = await fightService.startFight(Number(opponentId));

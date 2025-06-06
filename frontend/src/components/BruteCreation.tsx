@@ -67,14 +67,14 @@ const BruteCreation = () => {
     if (!authService.isAuthenticated()) {
       navigate('/login');
     }
-  }, [navigate]);
-
-  const handleCreateBrute = async (e: React.FormEvent) => {
+  }, [navigate]);  const handleCreateBrute = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    try {      const newBrute = await bruteService.createBrute(name);
+    try {      
+      const newBrute = await bruteService.createBrute(name);
       await bruteService.selectBrute(newBrute.id);
+      
       navigate('/opponents'); // Redirige a la selección de oponentes
   } catch (err: any) {
       if (err.message?.includes('Sesión expirada')) {

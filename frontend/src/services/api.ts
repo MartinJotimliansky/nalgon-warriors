@@ -34,6 +34,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Helper function to notify brute updates
+const notifyBruteUpdate = () => {
+  window.dispatchEvent(new CustomEvent('bruteUpdated'));
+};
+
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
@@ -86,8 +91,7 @@ export const authService = {
   },
 };
 
-export const bruteService = {
-  createBrute: async (name: string): Promise<Brute> => {
+export const bruteService = {  createBrute: async (name: string): Promise<Brute> => {
     try {
       if (!name) {
         throw new Error("El nombre del bruto es requerido");
@@ -103,6 +107,10 @@ export const bruteService = {
 
       console.log("API - Creando bruto:", { name });
       const response = await api.post<Brute>("/brutes", { name });
+      
+      // Notify that brutes have been updated
+      notifyBruteUpdate();
+      
       return response.data;
     } catch (error: any) {
       console.error("Error al crear bruto:", error);
@@ -129,10 +137,12 @@ export const bruteService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al obtener los brutos");
     }
-  },
-  selectBrute: async (bruteId: number): Promise<void> => {
+  },  selectBrute: async (bruteId: number): Promise<void> => {
     try {
       await api.patch(`/brutes/${bruteId}/select`);
+      
+      // Notify that brute selection has been updated
+      notifyBruteUpdate();
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al seleccionar el bruto");
     }
@@ -145,13 +155,21 @@ export const bruteService = {
       throw new Error(error.response?.data?.message || "Error al obtener el bruto seleccionado");
     }
   },
-
   getBruteOpponents: async (bruteId: number): Promise<Brute[]> => {
     try {
       const response = await api.get<Brute[]>(`/brutes/${bruteId}/opponents`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al obtener oponentes");
+    }
+  },
+
+  getBruteConfig: async (): Promise<{ max_brutes: number; base_hp: number; weapon_chance: number }> => {
+    try {
+      const response = await api.get(`/brutes/config`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener configuración de brutos");
     }
   },
 
@@ -190,6 +208,26 @@ export const fightService = {
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al obtener el historial de peleas");
+    }
+  },
+};
+
+export const levelService = {
+  getBruteLevelInfo: async (bruteId: number): Promise<any> => {
+    try {
+      const response = await api.get(`/level/brute/${bruteId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener información de nivel");
+    }
+  },
+
+  levelUp: async (bruteId: number): Promise<any> => {
+    try {
+      const response = await api.post(`/level/brute/${bruteId}/level-up`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al subir de nivel");
     }
   },
 };

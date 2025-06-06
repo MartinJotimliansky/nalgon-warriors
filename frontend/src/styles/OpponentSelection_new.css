@@ -94,7 +94,7 @@
 .opponent-card {
   background: #22304a;
   border-radius: 12px;
-  padding: 16px 16px 32px 16px; /* Incrementar padding inferior significativamente */
+  padding: 12px 16px 32px 16px; /* Reducir padding superior para subir el contenido */
   color: #fff;
   cursor: pointer;
   transition: box-shadow 0.2s;
@@ -107,29 +107,29 @@
   box-shadow: 0 0 0 2px #6ec1ff;
 }
 
-/* Header del oponente - Solo Nombre */
+/* Header del oponente - Solo nombre centrado */
 .opponent-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px; /* Incrementar aún más para mayor separación */
+  margin-bottom: 6px; /* Reducir margen inferior */
 }
 
 .opponent-card h3 {
   color: #fff;
-  margin: 0 0 4px 0; /* Agregar margen inferior al nombre */
+  margin: 0; /* Eliminar todos los márgenes */
   font-size: 1.1em;
   text-align: center;
   font-weight: bold;
 }
 
-/* Fila de estadísticas especiales */
+/* Fila de estadísticas especiales reorganizada */
 .opponent-special-stats-row {
   display: flex;
-  align-items: center; /* Cambiar de nuevo a center para alinear todo al mismo nivel */
+  align-items: flex-start;
   gap: 12px;
   flex: 1;
-  margin-bottom: 8px; /* Agregar margen inferior para separar del borde */
+  margin-bottom: 8px;
 }
 
 /* Bloque de HP con corazón */
@@ -139,7 +139,6 @@
   align-items: center;
   justify-content: center;
   min-width: 60px;
-  align-self: center; /* Asegurar alineación central con el avatar */
 }
 
 .hp-icon-large {
@@ -191,10 +190,10 @@
   transition: width 0.3s;
 }
 
-/* Avatar del oponente con nivel debajo */
+/* Contenedor de avatar con nivel debajo */
 .avatar-container-right {
   display: flex;
-  flex-direction: column; /* Cambiar a columna para poner nivel debajo */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-left: 8px;
@@ -205,16 +204,18 @@
   height: 70px;
   border-radius: 8px;
   background: #18213a;
-  margin-bottom: 4px; /* Espacio entre avatar y nivel */
+  margin-bottom: 4px; /* Pequeño margen entre avatar y nivel */
 }
 
+/* Nivel debajo del avatar */
 .level-badge {
   color: #6ec1ff;
   font-weight: bold;
-  font-size: 0.8em; /* Reducir tamaño */
+  font-size: 0.85em; /* Ligeramente más pequeño */
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+  text-align: center;
 }
 
 /* Historial de combates */
@@ -263,41 +264,6 @@
   margin-top: 2px;
 }
 
-/* Combat blocking styles */
-.combat-blocked-notice {
-  background: linear-gradient(45deg, #FF6B35, #F7931E);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
-  animation: pulse-notice 2s infinite;
-}
-
-@keyframes pulse-notice {
-  0% {
-    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
-  }
-  50% {
-    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.6);
-  }
-  100% {
-    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
-  }
-}
-
-.opponents-grid.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.opponents-grid.disabled .opponent-card {
-  cursor: not-allowed;
-  filter: grayscale(50%);
-}
-
 /* Responsive design */
 @media (min-width: 1201px) {
   .opponent-selection {
@@ -323,7 +289,8 @@
     min-width: auto;
     max-width: 100%;
   }
-    .opponents-grid {
+  
+  .opponents-grid {
     grid-template-columns: 1fr 1fr; /* Mantener 2 columnas en móvil */
     grid-template-rows: auto; /* Permitir más filas en móvil */
     max-height: none;
