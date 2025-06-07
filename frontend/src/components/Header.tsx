@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -61,38 +61,63 @@ const BruteAvatar: React.FC<BruteAvatarProps> = ({ brute, isSelected, onClick })
   </Tooltip>
 );
 
-const Header: React.FC = () => {
-  const [brutes, setBrutes] = useState<Brute[]>([]);
+const Header: React.FC = () => {  const [brutes, setBrutes] = useState<Brute[]>([]);
   const [selectedBrute, setSelectedBrute] = useState<Brute | null>(null);
   const [maxBrutes, setMaxBrutes] = useState<number>(5); // Default 5, se actualizará desde backend
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const location = useLocation();const loadBrutes = async (): Promise<void> => {
+  const location = useLocation();  const loadBrutes = useCallback(async (): Promise<void> => {
+    // Prevent multiple simultaneous calls
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
       console.log('🔍 Header: Loading brutes...');
+      
+      // Check if we have cached data to avoid duplicate calls
+      const cachedBrutes = sessionStorage.getItem('allBrutes');
+      const cachedConfig = sessionStorage.getItem('bruteConfig');
+      const cachedCurrentBrute = sessionStorage.getItem('currentSelectedBrute');
+      
+      if (cachedBrutes && cachedConfig && cachedCurrentBrute) {
+        console.log('🎯 Header: Using cached data');
+        setBrutes(JSON.parse(cachedBrutes));
+        setMaxBrutes(JSON.parse(cachedConfig).max_brutes);
+        setSelectedBrute(JSON.parse(cachedCurrentBrute));
+        return;
+      }
+      
       const [allBrutes, config] = await Promise.all([
         bruteService.getAllBrutes(),
         bruteService.getBruteConfig()
       ]);
       
-      console.log('🔍 Header: Brutes loaded:', allBrutes);
-      console.log('🔍 Header: Brutes count:', allBrutes.length);
-      console.log('🔍 Header: Config loaded:', config);
+      console.log('🔍 Header: Fresh data loaded - Brutes:', allBrutes.length);
       
       setBrutes(allBrutes);
       setMaxBrutes(config.max_brutes);
       
       const current = await bruteService.getCurrentSelectedBrute();
-      console.log('🔍 Header: Current selected brute:', current);
       setSelectedBrute(current);
+      
+      // Cache the data to avoid duplicate calls
+      sessionStorage.setItem('allBrutes', JSON.stringify(allBrutes));
+      sessionStorage.setItem('bruteConfig', JSON.stringify(config));
+      sessionStorage.setItem('currentSelectedBrute', JSON.stringify(current));
+      
     } catch (error) {
       console.error('❌ Header: Error loading brutes:', error);
       // En caso de error, asegurar que el botón + aparezca
       setBrutes([]);
       setMaxBrutes(5); // Fallback default
-      setSelectedBrute(null);
+      setSelectedBrute(null);    } finally {
+      setIsLoading(false);
     }
-  };  useEffect(() => {
-    loadBrutes();
+  }, [isLoading]);useEffect(() => {
+    // Only load on initial mount and specific route changes
+    if (location.pathname === '/opponents' || location.pathname === '/create-brute' || brutes.length === 0) {
+      loadBrutes();
+    }
 
     // Escuchar eventos de actualización de brutos
     const handleBruteUpdate = () => {
@@ -105,13 +130,32 @@ const Header: React.FC = () => {
     return () => {
       window.removeEventListener('bruteUpdated', handleBruteUpdate);
     };
-  }, [location.pathname]); // Recargar brutos cuando cambie la ruta
-
-  const handleBruteClick = async (brute: Brute): Promise<void> => {
+  }, [location.pathname, brutes.length, loadBrutes]);  const handleBruteClick = async (brute: Brute): Promise<void> => {
     try {
       await bruteService.selectBrute(brute.id);
       const updatedBrute = await bruteService.getBruteById(brute.id);
       setSelectedBrute(updatedBrute);
+      
+      // Clear relevant cache data to force refresh in OpponentSelection
+      sessionStorage.removeItem('currentSelectedBrute');
+      sessionStorage.removeItem('bruteOpponents');
+      sessionStorage.removeItem('fightHistory');
+      sessionStorage.removeItem('bruteLevelInfo');
+      
+      // Update the selected brute cache with new data
+      sessionStorage.setItem('currentSelectedBrute', JSON.stringify(updatedBrute));
+      
+      // Update brutes list to reflect the new selected brute
+      setBrutes(prevBrutes => 
+        prevBrutes.map(b => ({ ...b, isSelected: b.id === brute.id }))
+      );
+      
+      // Emit event for other components to react
+      window.dispatchEvent(new CustomEvent('bruteUpdated', { 
+        detail: { selectedBrute: updatedBrute } 
+      }));
+      
+      console.log('🔄 Header: Brute selection updated, navigating to opponents');
       navigate('/opponents');
     } catch (error) {
       console.error('Error selecting brute:', error);

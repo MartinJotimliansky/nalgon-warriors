@@ -20,6 +20,7 @@ export interface Weapon {
   speed: number;
   effect_ids: number[];
   power_value: number;
+  description?: string;
 }
 
 export interface Skill {
@@ -32,6 +33,7 @@ export interface Skill {
   };
   is_passive: boolean;
   power_value: number;
+  description?: string;
 }
 
 export interface Brute {

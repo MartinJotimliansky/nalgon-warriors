@@ -19,27 +19,25 @@ const ExperienceBar: React.FC<ExperienceBarProps> = ({
   canLevelUp,
   onLevelUp
 }) => {
-  const xpInCurrentLevel = currentXp - currentLevelXp;
-  const xpNeededForNextLevel = nextLevelXp - currentLevelXp;
-  const progressPercentage = (xpInCurrentLevel / xpNeededForNextLevel) * 100;
-
-  return (
+  // currentXp = experiencia actual del bruto
+  // nextLevelXp = experiencia total requerida para el siguiente nivel
+  // currentLevelXp = experiencia que falta para subir de nivel
+  
+  const expNeeded = currentLevelXp; // Experiencia que falta
+  const progressPercentage = nextLevelXp > 0 ? (currentXp / nextLevelXp) * 100 : 0;  return (
     <div className="experience-bar-container">
-      <div className="experience-bar-header">
-        <div className="level-display">
-          <GiSwordman className="level-icon" />
-          <span className="level-text">Nivel {level}</span>
-        </div>
-        <div className="xp-text">
-          {xpInCurrentLevel} / {xpNeededForNextLevel} XP
-        </div>
-      </div>
-      
-      <div className="experience-bar">
+      <div 
+        className="experience-bar"
+        title={`${currentXp} / ${nextLevelXp}`}
+      >
         <div 
           className="experience-bar-fill" 
           style={{ width: `${Math.min(progressPercentage, 100)}%` }}
         />
+      </div>
+      
+      <div className="experience-bar-header">
+        <span className="exp-text">EXP</span>
       </div>
       
       {canLevelUp && onLevelUp && (

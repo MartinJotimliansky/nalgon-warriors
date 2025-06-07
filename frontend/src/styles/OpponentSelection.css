@@ -73,7 +73,34 @@
 }
 
 .stats-grid .stat-bar {
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.stats-grid .stat-bar .stat-icon {
+  color: #fff;
+  font-size: 1.2em;
+  min-width: 20px;
+}
+
+.stats-grid .stat-bar .stat-bar-bg {
+  background: #18213a;
+  border-radius: 8px;
+  width: 200px;
+  height: 16px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-grid .stat-bar .stat-bar-fill {
+  background: linear-gradient(90deg, #6ec1ff, #4a9eff);
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
 }
 
 /* Contenedor de oponentes */
@@ -296,6 +323,147 @@
 .opponents-grid.disabled .opponent-card {
   cursor: not-allowed;
   filter: grayscale(50%);
+}
+
+/* Skills section in player's brute (below stats) */
+.skills-section {
+  background: #1a253a;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.skills-section h3 {
+  color: #6ec1ff;
+  margin: 0 0 12px 0;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 6px;
+  max-width: 100%;
+}
+
+.skill-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px;
+  background: #D4A574; /* Golden/yellow background like in the image */
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  min-height: 60px;
+  aspect-ratio: 1; /* Make them square */
+  position: relative;
+}
+
+.skill-item.skill-owned {
+  background: #4CAF50; /* Green background for owned skills */
+  border-color: #45a049;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.skill-item.skill-disabled {
+  background: #666; /* Gray background for disabled skills */
+  opacity: 0.5;
+  border-color: #555;
+  cursor: not-allowed;
+}
+
+.skill-item.skill-owned:hover {
+  background: #5CBF60; /* Lighter green on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 2px 15px rgba(76, 175, 80, 0.4);
+}
+
+.skill-item.skill-disabled:hover {
+  background: #666; /* No change on hover for disabled */
+  transform: none;
+  opacity: 0.5;
+}
+
+.skill-owned-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #fff;
+  color: #4CAF50;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Default hover is now handled by specific skill states above */
+
+.skill-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8em;
+  color: #2d1810; /* Dark brown color for the icons */
+  transition: color 0.2s ease;
+}
+
+.skill-disabled .skill-icon {
+  color: #999; /* Lighter color for disabled skill icons */
+}
+
+.skill-owned .skill-icon {
+  color: #fff; /* White color for owned skill icons */
+}
+
+.skill-info {
+  display: none; /* Hide text info to match the image style */
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    gap: 5px;
+  }
+  
+  .skill-item {
+    padding: 5px;
+    min-height: 50px;
+  }
+  
+  .skill-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 4px;
+  }
+  
+  .skill-item {
+    padding: 4px;
+    min-height: 45px;
+  }
+  
+  .skill-icon {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 /* Responsive design */

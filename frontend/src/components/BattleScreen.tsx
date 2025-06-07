@@ -40,6 +40,24 @@ const BattleScreen: React.FC = () => {
 
     startBattle();
   }, [location.search]);
+  const handleReturnToOpponents = () => {
+    console.log('🔄 BattleScreen: Battle completed, clearing cache and updating brute data...');
+    
+    // Clear all cached data to force refresh
+    sessionStorage.removeItem('currentSelectedBrute');
+    sessionStorage.removeItem('bruteOpponents');
+    sessionStorage.removeItem('fightHistory');
+    sessionStorage.removeItem('bruteLevelInfo');
+    sessionStorage.removeItem('allBrutes');
+    sessionStorage.removeItem('bruteConfig');
+    
+    // Dispatch event to notify components to refresh
+    window.dispatchEvent(new CustomEvent('bruteUpdated', { 
+      detail: { postBattle: true } 
+    }));
+    
+    navigate('/opponents');
+  };
 
   if (loading) {
     return <div className="battle-result">Iniciando batalla...</div>;
@@ -49,7 +67,7 @@ const BattleScreen: React.FC = () => {
     return (
       <div className="battle-result error">
         <p>{error}</p>
-        <button onClick={() => navigate('/opponents')}>Volver a oponentes</button>
+        <button onClick={handleReturnToOpponents}>Volver a oponentes</button>
       </div>
     );
   }
@@ -59,7 +77,7 @@ const BattleScreen: React.FC = () => {
       {winner && (
         <>
           <h2>¡{winner.name} es el ganador!</h2>
-          <button onClick={() => navigate('/opponents')}>Volver a oponentes</button>
+          <button onClick={handleReturnToOpponents}>Volver a oponentes</button>
         </>
       )}
     </div>

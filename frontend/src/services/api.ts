@@ -1,5 +1,5 @@
 ﻿import axios, { AxiosInstance } from "axios";
-import { Brute } from "../types/brute";
+import { Brute, Weapon, Skill } from "../types/brute";
 
 const API_URL = "http://localhost:5000";
 
@@ -146,12 +146,17 @@ export const bruteService = {  createBrute: async (name: string): Promise<Brute>
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al seleccionar el bruto");
     }
-  },
-  getCurrentSelectedBrute: async (): Promise<Brute> => {
+  },  getCurrentSelectedBrute: async (): Promise<Brute> => {
     try {
+      console.log('🔍 API: Calling getCurrentSelectedBrute...');
       const response = await api.get<Brute>("/brutes/current/selected");
+      console.log('🔍 API: getCurrentSelectedBrute response:', response.data);
+      console.log('🔍 API: Brute XP:', response.data.xp);
+      console.log('🔍 API: Brute Skills:', response.data.skills);
+      console.log('🔍 API: Brute Weapons:', response.data.weapons);
       return response.data;
     } catch (error: any) {
+      console.error('❌ API: Error in getCurrentSelectedBrute:', error);
       throw new Error(error.response?.data?.message || "Error al obtener el bruto seleccionado");
     }
   },
@@ -172,13 +177,43 @@ export const bruteService = {  createBrute: async (name: string): Promise<Brute>
       throw new Error(error.response?.data?.message || "Error al obtener configuración de brutos");
     }
   },
-
   initiateFight: async (bruteId: number, opponentId: number): Promise<any> => {
     try {
-      const response = await api.post(`/brutes/${bruteId}/fight/${opponentId}`);
+      // Note: bruteId is not needed since the backend uses the selected brute
+      const response = await api.post(`/fights/selected-brute/vs/${opponentId}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al iniciar la batalla");
+    }  },
+
+  getStaticGameData: async (): Promise<{
+    weapons: Weapon[];
+    skills: Skill[];
+    config: { max_brutes: number; base_hp: number; weapon_chance: number };
+  }> => {
+    try {
+      const response = await api.get("/brutes/static-data");
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener datos estáticos del juego");
+    }
+  },
+
+  getAllWeapons: async (): Promise<Weapon[]> => {
+    try {
+      const response = await api.get("/brutes/weapons");
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener las armas");
+    }
+  },
+
+  getAllSkills: async (): Promise<Skill[]> => {
+    try {
+      const response = await api.get("/brutes/skills");
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener las habilidades");
     }
   },
 };
@@ -221,10 +256,25 @@ export const levelService = {
       throw new Error(error.response?.data?.message || "Error al obtener información de nivel");
     }
   },
-
-  levelUp: async (bruteId: number): Promise<any> => {
+  getAvailableGratifications: async (bruteId: number): Promise<any> => {
     try {
-      const response = await api.post(`/level/brute/${bruteId}/level-up`);
+      const response = await api.get(`/level/brute/${bruteId}/gratifications`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Error al obtener gratificaciones disponibles");
+    }
+  },
+
+  levelUp: async (bruteId: number, gratificationChoice: { id: string, type: string }): Promise<any> => {
+    try {
+      const response = await api.post(`/level/level-up`, {
+        bruteId,
+        gratificationChoice
+      });
+      
+      // Notify that brute has been updated after level up
+      notifyBruteUpdate();
+      
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Error al subir de nivel");
